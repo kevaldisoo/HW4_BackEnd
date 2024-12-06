@@ -1,0 +1,22 @@
+### signup a user
+POST http://localhost:3000/auth/signup
+Content-Type: application/json
+
+  {
+    "email": "user@ee",
+    "password": "user"
+  }
+
+### login a user
+POST http://localhost:3000/auth/login
+Content-Type: application/json
+
+  {
+    "email": "user@ee",
+    "password": "user"
+  }
+
+###  Authinticate a user, this will not work for you unless you replace the token with one created for your user
+GET http://localhost:3000/auth/authenticate
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImEyMzEzMzU2LWY2ZDYtNDI1NS1hYzBmLWI4ZDdlNGZmYmUyMyIsImlhdCI6MTY2ODgwMjc0NywiZXhwIjoxNjY4ODA2MzQ3fQ.X2I_tHlpBJoES_brX43EEbx4uvlIDzzMU68FJvNVsXE
+
