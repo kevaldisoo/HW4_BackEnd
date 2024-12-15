@@ -125,3 +125,43 @@ app.get('/auth/logout', (req, res) => {
     console.log('delete jwt request arrived');
     res.status(202).clearCookie('jwt').json({ "Msg": "cookie cleared" }).send
 });
+
+//fetch posts
+app.get('/posts', async (req, res) => {
+    try {
+        console.log("fetching posts");
+        const result = await pool.query("SELECT * FROM posts ORDER BY created_at DESC;");
+        res.status(200).json(result.rows);
+    } catch (error) {
+        res.status(401).json({ error: error.message });
+    }
+})
+
+//adding a new post
+app.post('/posts', async (req, res) => {
+    try {
+        const { title, content } = req.body;
+        const newPost = await pool.query(
+            "INSERT INTO posts (title, content, likes) VALUES ($1, $2, $3) RETURNING *",
+            [title, content, 0]
+        );
+        res.status(201).json(newPost.rows[0]);
+    } catch (error) {
+        res.status(401).json({ error: error.message });
+    }
+})
+
+
+//deleting posts
+app.delete('/posts/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedPost = await pool.query("DELETE FROM posts WHERE id = $1 RETURNING *", [id]);
+        if (deletedPost.rows.length === 0) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+        res.status(200).json(deletedPost.rows[0]);
+    } catch (error) {
+        res.status(401).json({ error: error.message });
+    }
+});
