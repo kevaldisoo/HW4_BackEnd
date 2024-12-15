@@ -137,13 +137,27 @@ app.get('/posts', async (req, res) => {
     }
 })
 
+//fetch a single post 
+app.get('/posts/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const result = await pool.query("SELECT * FROM posts WHERE id = $1", [id]);
+        if (result.rows.length === 0) {
+            return res.status(404).json({ error: "Post not found" });
+        }
+        res.status(200).json(result.rows[0]);
+    } catch (error) {
+        res.status(500).json({ error: "Failed to fetch post" });
+    }
+});
+
 //adding a new post
 app.post('/posts', async (req, res) => {
     try {
-        const { title, content } = req.body;
+        const { content } = req.body;
         const newPost = await pool.query(
-            "INSERT INTO posts (title, content, likes) VALUES ($1, $2, $3) RETURNING *",
-            [title, content, 0]
+            'INSERT INTO posts (content) VALUES ($1) RETURNING *',
+            [content]
         );
         res.status(201).json(newPost.rows[0]);
     } catch (error) {
@@ -152,7 +166,7 @@ app.post('/posts', async (req, res) => {
 })
 
 
-//deleting posts
+//deleting 1 post
 app.delete('/posts/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -165,3 +179,13 @@ app.delete('/posts/:id', async (req, res) => {
         res.status(401).json({ error: error.message });
     }
 });
+
+//deleting all posts
+app.delete('/posts', async (req, res) => {
+    try {
+        const result = await pool.query("DELETE FROM posts RETURNING *");
+        res.status(200).json({ message: "All posts deleted successfully", deleted: result.rows });
+    } catch (error) {
+        res.status(500).json({ error: "Failed to delete all posts" });
+    }
+})

@@ -29,9 +29,9 @@ const createUsersTblQuery = `
 
 // Create "posts" table
 const createPostsTblQuery = `
-    CREATE TABLE IF NOT EXISTS "posts" (
+    DROP TABLE "posts";
+    CREATE TABLE "posts" (
         id SERIAL PRIMARY KEY,
-        title VARCHAR(255) NOT NULL,
         content TEXT NOT NULL,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         user_id uuid REFERENCES "users"(id) ON DELETE CASCADE
