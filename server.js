@@ -165,6 +165,34 @@ app.post('/posts', async (req, res) => {
     }
 })
 
+// Update a post by id
+app.put('/posts/:id', async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { content } = req.body;  // Get the updated content from the request body
+  
+      // Ensure that the content is provided
+      if (!content) {
+        return res.status(400).json({ error: 'Content is required to update the post' });
+      }
+  
+      // Update the post in the database
+      const result = await pool.query(
+        'UPDATE posts SET content = $1 WHERE id = $2 RETURNING *',
+        [content, id]
+      );
+  
+      if (result.rows.length === 0) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+  
+      // Return the updated post
+      res.json(result.rows[0]);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
 
 //deleting 1 post
 app.delete('/posts/:id', async (req, res) => {
